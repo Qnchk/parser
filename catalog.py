@@ -1,21 +1,14 @@
 import scrapy
 
 
-
 class CatalogSpider(scrapy.Spider):
     name = 'catalog'
     etalon = 'https://www.amayama.com'
     count = 0
-
-
-
-
     allowed_domains = ['amayama.com']
     file = open('Links.txt')
     start_urls = file.read().split()
     print(len(start_urls))
-
-
 
 
     def parse(self, response, **kwargs):
@@ -23,9 +16,6 @@ class CatalogSpider(scrapy.Spider):
         c = response.css('.market a::attr(href)').extract()
         y = response.css('td[width="25%"] a::attr(href)').extract()
         c+=y
-
-
-
         for i in c:
             if 'http' in i:
                 yield scrapy.Request(i, callback=self.parse3)
@@ -71,30 +61,12 @@ class CatalogSpider(scrapy.Spider):
                 yield scrapy.Request(self.etalon + i, callback=self.parse7)
     def parse7(self,response, **kwargs):
         c = response.css('.priceRangeContainer a::attr(href)').extract()
-
-
-
-
         for i in c:
             if 'http' in i:
                 yield scrapy.Request(i, callback=self.final)
             else:
                 yield scrapy.Request(self.etalon + i, callback=self.final)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+                
     def final(self,response,**kwargs):
         self.count = 0
         for line in response.css('.part-table__body  tr'):
@@ -118,9 +90,6 @@ class CatalogSpider(scrapy.Spider):
                     #'Описание': response.css('.item::text').extract(),
 
                  }
-
-
-
                 lp= response.css('#fitness-table > div:nth-child(1) > div.fitness__row-content > div > span::text').extract()
                 items.update({"Описание1": lp})
                 sp=response.css('.item::text').extract()
